@@ -52,7 +52,6 @@ function scan(queue, devices, callback) {
     if (ip) {
         var cmd = deploy + ' -listDeviceInfo ' + ip + ' -password ' + password;
         shell.exec(cmd,{silent:true,async:true},function(code, output) {
-            // TODO: what if exit code > 0 ?
             if (code === 0) {
                 var lines = output.split('\n');
                 var version = lines.filter(function(l) { return l.indexOf('scmbundle::') > -1; })[0].split('::')[1];
@@ -64,7 +63,9 @@ function scan(queue, devices, callback) {
                     model:hardware,
                     version:version
                 };
-            } 
+            } else {
+                console.log("[BLACKBERRY SCANNER] [ERROR] " + output);
+            }
             scan(queue, devices, callback);
         });
     } else {

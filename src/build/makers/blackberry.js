@@ -63,6 +63,20 @@ module.exports = function(output, sha, devices, entry_point, callback) {
                         var config_path = path.join(output, 'www', 'config.xml');
                         var doc = new et.ElementTree(et.XML(fs.readFileSync(config_path, 'utf-8')));
                         doc.getroot().find('content').attrib.src = entry_point;
+
+                        // TODO: find the right place for mobile-spec specific changes
+                        //add access elements to stop mobile spec from complaining
+                        var widget = doc.getroot();
+                        var access1 = new et.SubElement(widget, 'access');
+                        access1.attrib.uri = "http://jitsu.com";
+                        access1.attrib.subdomains = "true";
+                        var access2 = new et.SubElement(widget, 'access');
+                        access2.attrib.uri = "http://apache.org";
+                        access2.attrib.subdomains = "true";
+                        var access3 = new et.SubElement(widget, 'access');
+                        access3.attrib.uri = "https://apache.org";
+                        access3.attrib.subdomains = "true";
+
                         fs.writeFileSync(config_path, doc.write({indent:4}), 'utf-8');
 
                         // two copies of the project
